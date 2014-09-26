@@ -40,18 +40,25 @@ for service in client.wsdl.services:
             for param in method[1]:
                 param_type = param[1]
                 type_name = param_type.type[0]
-
                 qname = str(sd.xlate(param_type))
-                if type_name in t_map:
-                    class_model = class_model_map.get(type_name)
-                    if not class_model:
-                        class_model = ComplexTypeClassModel(
-                            type_name,
-                            [str(t[0].name) for t in t_map[type_name].children()],
-                            client_method_name,
-                            qname
-                        )
-                        class_model_map[type_name] = class_model
+
+                def add_class_model(type_name, qname):
+                    global class_model, t_map
+                    if type_name in t_map:
+                        class_model = class_model_map.get(type_name)
+                        if not class_model:
+                            class_model = ComplexTypeClassModel(
+                                type_name,
+                                [str(t[0].name) for t in t_map[type_name].children()],
+                                client_method_name,
+                                qname
+                            )
+                            class_model_map[type_name] = class_model
+                            for t in [t[0] for t in t_map[type_name].children()]:
+                                add_class_model(t.type[0], str(sd.xlate(t)))
+
+                add_class_model(type_name, qname)
+
                 method_model.append_arg((param[0], qname))
             module_model.append_method(method_model)
     for class_model in class_model_map.values():
