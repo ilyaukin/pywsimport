@@ -1,6 +1,4 @@
 from argparse import ArgumentParser
-import inflection
-import os
 
 from suds.client import Client
 from suds.servicedefinition import ServiceDefinition
