@@ -26,8 +26,7 @@ client_method_name = "_" + args.name + "_client"
 client_method_model = ClientMethodModel(client_method_name, client_name, args.wsdl, service_name=args.name)
 module_model.append_method(client_method_model)
 
-for service in client.wsdl.services:
-    sd = ServiceDefinition(client.wsdl, service)
+for sd in client.sd:
     t_map = dict()
     class_model_map = dict()
     for t in [t[0] for t in sd.types]:
@@ -59,7 +58,7 @@ for service in client.wsdl.services:
 
                 add_class_model(type_name, qname)
 
-                method_model.append_arg((param[0], qname))
+                method_model.append_arg((param[0], qname, param_type.nillable))
             module_model.append_method(method_model)
     for class_model in class_model_map.values():
         module_model.append_class(class_model)

@@ -75,7 +75,8 @@ class ModuleModel(object):
             fd = ast.FunctionDef(name=method_model.method_name,
                                  args=ast.arguments(
                                      args=[ast.Name(id=arg[0], ctx=ast.Param()) for arg in method_model.args],
-                                     defaults=[],
+                                     defaults=[ast.Name(id="None", ctx=ast.Load()) if arg[2] else None for arg in
+                                               method_model.args],
                                      vararg=None,
                                      kwarg=None),
                                  body=method_body,
@@ -225,11 +226,11 @@ class ComplexTypeClassModel(ClassModel):
         return [ast.FunctionDef(
             name='__new__',
             args=ast.arguments(
-                  args=[ast.Name(id='cls', ctx=ast.Param())],
-                  vararg='args',
-                  kwarg='kwargs',
-                  defaults=[]
-              ),
+                args=[ast.Name(id='cls', ctx=ast.Param())],
+                vararg='args',
+                kwarg='kwargs',
+                defaults=[]
+            ),
             body=
             [ast.Assign(
                 targets=[ast.Name(id='obj', ctx=ast.Store())],
