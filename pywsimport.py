@@ -39,7 +39,7 @@ for sd in client.sd:
             for param in method[1]:
                 param_type = param[1]
                 type_name = param_type.type[0]
-                qname = str(sd.xlate(param_type))
+                qname = str(param_type.root.get('type'))
 
                 def add_class_model(type_name, qname):
                     global class_model, t_map
@@ -54,7 +54,7 @@ for sd in client.sd:
                             )
                             class_model_map[type_name] = class_model
                             for t in [t[0] for t in t_map[type_name].children()]:
-                                add_class_model(t.type[0], str(sd.xlate(t)))
+                                add_class_model(t.type[0], str(t.root.get('type')))
 
                 add_class_model(type_name, qname)
 
