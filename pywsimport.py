@@ -31,34 +31,34 @@ for sd in client.sd:
     class_model_map = dict()
     for t in [t[0] for t in sd.types]:
         if isinstance(t, Complex):
-            t_map[t.name] = t
+            t_map[t.qname] = t
     for port in sd.ports:
         for method in port[1]:
             method_name = method[0]
             method_model = ServiceQueryMethodModel(method_name, client_method_name, service_name=args.name)
             for param in method[1]:
                 param_type = param[1]
-                type_name = param_type.type[0]
-                qname = str(param_type.root.get('type'))
+                qname = param_type.type
+                type_name_with_prefix = str(param_type.root.get('type'))
 
-                def add_class_model(type_name, qname):
+                def add_class_model(qname, type_name_with_prefix):
                     global class_model, t_map
-                    if type_name in t_map:
-                        class_model = class_model_map.get(type_name)
+                    if qname in t_map:
+                        class_model = class_model_map.get(qname)
                         if not class_model:
                             class_model = ComplexTypeClassModel(
-                                type_name,
-                                [str(t[0].name) for t in t_map[type_name].children()],
+                                str(qname[0]),
+                                [str(t[0].name) for t in t_map[qname].children()],
                                 client_method_name,
-                                qname
+                                type_name_with_prefix
                             )
-                            class_model_map[type_name] = class_model
-                            for t in [t[0] for t in t_map[type_name].children()]:
-                                add_class_model(t.type[0], str(t.root.get('type')))
+                            class_model_map[qname] = class_model
+                            for t in [t[0] for t in t_map[qname].children()]:
+                                add_class_model(t.type, str(t.root.get('type')))
 
-                add_class_model(type_name, qname)
+                add_class_model(qname, type_name_with_prefix)
 
-                method_model.append_arg((param[0], qname, param_type.nillable))
+                method_model.append_arg((param[0], type_name_with_prefix, param_type.nillable))
             module_model.append_method(method_model)
     for class_model in class_model_map.values():
         module_model.append_class(class_model)
