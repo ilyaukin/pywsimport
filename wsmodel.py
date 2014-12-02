@@ -271,14 +271,14 @@ class ComplexTypeClassModel(ClassModel):
             [ast.Assign(
                 targets=[ast.Attribute(
                     value=ast.Name(id='obj', ctx=ast.Load()),
-                    attr=field,
+                    attr=str(field),
                     ctx=ast.Store())],
                 value=ast.Call(
                     func=ast.Attribute(
                         value=ast.Name(id='kwargs', ctx=ast.Load()),
                         attr='get',
                         ctx=ast.Load()),
-                    args=[ast.Str(field)],
+                    args=[ast.Str(str(field[1:] if field.startswith('_') else field))],
                     keywords=[],
                     starargs=None,
                     kwargs=None)) for field in self.fields] +

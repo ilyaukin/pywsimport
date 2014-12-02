@@ -41,6 +41,11 @@ for sd in client.sd:
                 qname = param_type.type
                 type_name_with_prefix = str(param_type.root.get('type'))
 
+                def get_attr_name(t):
+                    if t[0].isattr():
+                        return '_%s' % t[0].name
+                    return t[0].name
+
                 def add_class_model(qname, type_name_with_prefix):
                     global class_model, t_map
                     if qname in t_map:
@@ -48,7 +53,7 @@ for sd in client.sd:
                         if not class_model:
                             class_model = ComplexTypeClassModel(
                                 str(qname[0]),
-                                [str(t[0].name) for t in t_map[qname].children()],
+                                [get_attr_name(t) for t in t_map[qname].resolve()],
                                 client_method_name,
                                 type_name_with_prefix
                             )
